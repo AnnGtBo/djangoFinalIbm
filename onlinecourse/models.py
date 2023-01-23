@@ -55,8 +55,8 @@ class Learner(models.Model):
 # Course model
 class Course(models.Model):
     name = models.CharField(null=False, max_length=30, default='online course')
-    image = models.ImageField(upload_to='course_images/')
-    description = models.CharField(max_length=1000)
+    image = models.ImageField(upload_to='course_images/',  default=None)
+    description = models.CharField(max_length=1000, default='')
     pub_date = models.DateField(null=True)
     instructors = models.ManyToManyField(Instructor)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Enrollment')
@@ -72,7 +72,7 @@ class Lesson(models.Model):
     title = models.CharField(max_length=200, default="title")
     order = models.IntegerField(default=0)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    content = models.TextField()
+    content = models.TextField(default="none")
 
 
 # Enrollment model
@@ -108,13 +108,13 @@ class Enrollment(models.Model):
 class Question(models.Model):
     
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    courses = models.ManyToManyField(Course)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     question = models.CharField(max_length=200)
     grade = models.IntegerField(default=0)
 
-    def __str__(self):
-        return "question: " + self.question + "," + \
-               "in courses: " + self.courses
+    #def __str__(self):
+    #    return "question: " + self.question + "," + \
+    #           "in courses: " + self.course
     # <HINT> A sample model method to calculate if learner get the score of the question
 def is_get_score(self, selected_ids):
     all_answers = self.choice_set.filter(is_correct=True).count()
